@@ -1,5 +1,5 @@
 ---
-title: "Tarea 3 Christopher Cadena"
+title: "Tarea 3 Christopher Cadena y Ximena Alvarez"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -95,7 +95,7 @@ colores_cantones_delitos <-
 ```
 
 
-Column {data-width=650}
+Column {data-width=575}
 -----------------------------------------------------------------------
 
 ### Mapa de coropletas
@@ -171,7 +171,7 @@ delitos %>%
 ```
 
 
-Column {.tabset}
+Column {data-width=425, .tabset}
 -----------------------------------------------------------------------
 
 ### Delitos por tipo de delito
@@ -204,6 +204,7 @@ delitos_por_victima <-
   ggtitle("Delitos por víctima") +
   xlab("Tipo de Víctima") +
   ylab("Cantidad") +
+  coord_flip() +
   dark_theme_gray() +
   theme(legend.position = "top")
 
@@ -214,23 +215,35 @@ delitos_por_victima %>%
 
 ### Delitos por mes
 ```{r}
-delitos <-
+ggplot2_delitos_por_mes <-
   delitos %>%
-  mutate(mes = format(Fecha, "%B")) %>%
-  select(Delito, Fecha, Victima, Edad, Genero, Provincia, Canton, mes)%>%
-  mutate(Fecha = as.Date(Fecha, format = "%d/%m/%Y"))
-
-Grafico_por_mes <-
-  delitos %>%
-  ggplot(aes(x = mes)) +
-  geom_bar() +
-  ggtitle("Delitos por Mes") +
-  xlab("Meses") +
-  ylab("Cantidad de delitos") +
-  coord_flip() +
+  mutate(fecha = lubridate::month(Fecha))
+mes <-
+  c(
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+  )
+ggplot2_delitos_por_mes <- ggplot2_delitos_por_mes %>%
+  count(fecha) %>%
+  ggplot(aes(x = fecha, y = n)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Cantidad de delitos por mes") +
+  xlab("Mes") +
+  ylab("Cantidad") +
   dark_theme_gray() +
   theme(legend.position = "top")
-ggplotly(Grafico_por_mes) %>% config(locale = 'es')
+
+ggplotly(ggplot2_delitos_por_mes) %>% config(locale = 'es')
 ```
 
 
@@ -245,6 +258,7 @@ Proporcion_de_Delito_por_Genero <-
   xlab("Delito") +
   ylab("Proporción") +
   labs(fill = "Género") +
+  coord_flip() +
   dark_theme_gray() +
   theme(legend.position = "top")
 
